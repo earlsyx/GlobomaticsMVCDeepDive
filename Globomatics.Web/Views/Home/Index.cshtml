@@ -1,5 +1,14 @@
-﻿@using Globomantics.Domain.Models;
+﻿@*the @ symbols indicated that there's c# code to be evaluated during
+    the rendering of this view.
+
+    @model, indicate what's this view is going to work with in terms of
+    the data that is pass into it whch is Inumerable of a product
+    use using statement because you don't want to wrote globalantics.domains.models
+    .product
+*@
+@using Globomantics.Domain.Models;
 @model IEnumerable<Product>
+
 
 @{
     ViewData["Title"] = "Home";
@@ -9,8 +18,8 @@
     <div class="col-md-7">
         <div class="card">
             <div class="card-body">
-                TBA: Product List
-                @* <h5 class="card-title">Available events</h5>
+              
+                <h5 class="card-title">Available events</h5>
                 <table class="table">
                     <caption>Last updated @DateTimeOffset.UtcNow.ToString("R")</caption>
                     <thead>
@@ -27,6 +36,7 @@
                             <tr>
                                 <td><img src="~/img/products/@(product.ProductId).jpg" width="150" /></td>
                                 <td>
+                                    @*using tag helper to produce a link to a particular action*@
                                     <a asp-action="TicketDetails"
                                        asp-controller="Home"
                                        asp-route-productId="@product.ProductId"
@@ -42,7 +52,7 @@
                             </tr>
                         }
                     </tbody>
-                </table> *@
+                </table>
             </div>
         </div>
     </div>
