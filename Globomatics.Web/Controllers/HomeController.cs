@@ -22,10 +22,13 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var products = productRepository.All();
+        // since we remove the depndency in the index , then, meaning the index action, we dont needto
+        // fetch all products when we area ll hitting the srart page
+        //var products = productRepository.All();
 
-        logger.LogInformation($"Loaded {products.Count()} products");
-        return View(products);
+        return View();
+        //logger.LogInformation($"Loaded {products.Count()} products");
+        //return View(products);
         // view method call that can pass in an object to represent
         //the model which will be pass on to the view
     }

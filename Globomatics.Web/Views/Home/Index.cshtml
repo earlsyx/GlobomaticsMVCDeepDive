@@ -6,8 +6,11 @@
     use using statement because you don't want to wrote globalantics.domains.models
     .product
 *@
+
+@* 
+clean up and remove the depndency for the product    
 @using Globomantics.Domain.Models;
-@model IEnumerable<Product>
+@model IEnumerable<Product> *@
 
 
 @{
@@ -19,40 +22,14 @@
         <div class="card">
             <div class="card-body">
               
-                <h5 class="card-title">Available events</h5>
-                <table class="table">
-                    <caption>Last updated @DateTimeOffset.UtcNow.ToString("R")</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var product in Model)
-                        {
-                            <tr>
-                                <td><img src="~/img/products/@(product.ProductId).jpg" width="150" /></td>
-                                <td>
-                                    @*using tag helper to produce a link to a particular action*@
-                                    <a asp-action="TicketDetails"
-                                       asp-controller="Home"
-                                       asp-route-productId="@product.ProductId"
-                                       asp-route-slug="@product.Name">@product.Name</a>
-                                 </td>
-                                <td>@product.Price.ToString("c")</td>
-                                <td>
-                                    <form asp-controller="Cart" asp-action="Add">
-                                        <input type="hidden" name="product.productId" value="@product.ProductId" />
-                                        <input type="submit" value="Add to cart" class="btn btn-primary" />
-                                    </form>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                @*Loading the component can be done in two different ways , either with taghelpers, or a type of syntax, 
+                    use c# code, call Component, invoke async specify ocmpnent name, which will invoke the product list.
+                    this will find the component, create an instance of itand invoked method async,
+                    you can also optionally pass data into the view component
+                *@
+
+                @await Component.InvokeAsync("ProductList"); 
+
             </div>
         </div>
     </div>
