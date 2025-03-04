@@ -1,1 +1,27 @@
-﻿TBA
+﻿@using Globomantics.Domain.Models;
+
+@model Cart
+
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<div class="row"> 
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                TBA - ShoppingCart
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="card">
+
+            <div class="card-body">
+                <h5 class="card-title">Place Order</h5>
+                @await Html.PartialAsync("_PlaceOrder")
+            </div>
+        </div>
+    </div>
+</div>
