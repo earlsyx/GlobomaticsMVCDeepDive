@@ -18,14 +18,24 @@
             <tr>
                 <td><img src="~/img/products/@(product.ProductId).jpg" width="150" /></td>
                 <td>
+                    <url-with-slug
+                        asp-action="TicketDetails"
+                        asp-controller="Home"
+                        for-product-id="@product.ProductId" 
+                        for-ticket-name="@product.Name">
+                        @product.Name
+                    </url-with-slug>
                     @*using tag helper to produce a link to a particular action*@
-                    <a asp-action="TicketDetails"
+                   @*  <a asp-action="TicketDetails"
                        asp-controller="Home"
                        asp-route-productId="@product.ProductId"
-                       asp-route-slug="@product.Name">@product.Name</a>
+                       asp-route-slug="@product.Name">@product.Name</a> *@
                 </td>
                 <td>@product.Price.ToString("c")</td>
                 <td>
+                    @*Use tag helper to define that this swill post data to the ccart controler and to add  action
+                        hidden field that contains product id with value of product id
+                    *@
                     <form asp-controller="Cart" asp-action="Add">
                         <input type="hidden" name="product.productId" value="@product.ProductId" />
                         <input type="submit" value="Add to cart" class="btn btn-primary" />

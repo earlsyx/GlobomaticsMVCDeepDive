@@ -1,19 +1,41 @@
-﻿using Globomatics.Web.Models;
+﻿using Globomatics.Infrastructure.Repositories;
+using Globomatics.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Globomatics.Web.Controllers;
 
+[Route("[controller]")]
 public class CartController : Controller
 {
+    private readonly ILogger<CartController> logger;
+    private readonly ICartRepository cartRepository;
+
+    public CartController(ILogger<CartController> logger, ICartRepository cartRepository)
+    {
+        this.logger = logger;
+        this.cartRepository = cartRepository;
+    }
     public IActionResult Index(Guid? id)
     {
         return View();
     }
 
     [HttpPost]
+    [Route("Add")] // add route relatively to controller name
     public IActionResult AddToCart(AddToCartModel addToCartModel)
     {
-        throw new NotImplementedException();
+        if (addToCartModel.Product is null)
+        {
+            return BadRequest();
+        }
+
+        logger.LogInformation($"Adding products " + $"{addToCartModel.Product.ProductId} to cart " + $"{addToCartModel.CartId}");
+
+        var cart = cartRepository.CreateOrUpdate(addToCartModel.CartId, addToCartModel.Product.ProductId, addToCartModel.Product.Quantity);
+
+        cartRepository.SaveChanges();
+
+        return RedirectToAction("Index", "Cart");
     }
 
     [HttpPost]
@@ -28,6 +50,7 @@ public class CartController : Controller
         throw new NotImplementedException();
     }
 
+    [Route("ThankYou")]
     public IActionResult ThankYou()
     {
         return View();
