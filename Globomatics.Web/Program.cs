@@ -6,6 +6,8 @@ using Globomatics.Web.Transformers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSession();
+
 builder.Services.AddRouting(options =>
 {
     options.ConstraintMap["validateSlug"] = typeof(SlugConstraint);
@@ -16,6 +18,7 @@ builder.Services.AddRouting(options =>
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<GlobomanticsContext>(ServiceLifetime.Scoped);
 
 builder.Services.AddTransient<IRepository<Customer>, CustomerRepository>();
@@ -39,6 +42,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseSession();
 
 //app.MapControllerRoute(
 //    name: "ticketDetailsRoute",
