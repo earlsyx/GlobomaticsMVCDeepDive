@@ -8,6 +8,7 @@ namespace Globomatics.Web.Controllers;
 [Route("[controller]")]
 public class CartController : Controller
 {
+    private readonly IStateRepository stateRepository;
     private readonly ICartRepository cartRepository;
     private readonly IRepository<Customer> customerRepository;
     private readonly IRepository<Order> orderRepository;
@@ -16,12 +17,13 @@ public class CartController : Controller
     public CartController(ICartRepository cartRepository,
         IRepository<Customer> customerRepository,
         IRepository<Order> orderRepository,
-        ILogger<CartController> logger)
+        ILogger<CartController> logger, IStateRepository stateRepository)
     {
         this.cartRepository = cartRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.logger = logger;
+        this.stateRepository = stateRepository;
     }
 
     public IActionResult Index(Guid? id)
@@ -43,6 +45,10 @@ public class CartController : Controller
         var cart = cartRepository.CreateOrUpdate(addToCartModel.CartId, addToCartModel.Product.ProductId, addToCartModel.Product.Quantity);
 
         cartRepository.SaveChanges();
+
+        stateRepository.SetValue("NumberOfItems", cart.LineItems.Sum(x => x.Quantity).ToString());
+
+        stateRepository.SetValue("CartId", cart.CartId.ToString()!);
 
         return RedirectToAction("Index", "Cart");
     }
@@ -67,6 +73,9 @@ public class CartController : Controller
         }
 
         cartRepository.SaveChanges();
+        stateRepository.SetValue("NumberOfItems", cart.LineItems.Sum(x => x.Quantity).ToString());
+
+        stateRepository.SetValue("CartId", cart.CartId.ToString()!);
         return RedirectToAction("Index", "Cart");
     }
 
@@ -143,6 +152,10 @@ public class CartController : Controller
         cartRepository.SaveChanges();
 
         logger.LogInformation($"Order placed for {customer.CustomerId}");
+
+        stateRepository.Remove("NumberOfItems");
+        stateRepository.Remove("CartId");
+        
 
         return RedirectToAction("ThankYou");
     }

@@ -1,7 +1,9 @@
 using Globomantics.Domain.Models;
 using Globomantics.Infrastructure.Data;
 using Globomatics.Infrastructure.Repositories;
+using Globomatics.Web.Attributes;
 using Globomatics.Web.Constraints;
+using Globomatics.Web.Repositories;
 using Globomatics.Web.Transformers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +18,15 @@ builder.Services.AddRouting(options =>
 
 
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ValueProviderFactories.Add(new SessionValueProviderFactory());
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<GlobomanticsContext>(ServiceLifetime.Scoped);
 
+builder.Services.AddTransient<IStateRepository, SessionStateRepository>();
 builder.Services.AddTransient<IRepository<Customer>, CustomerRepository>();
 builder.Services.AddTransient<IRepository<Product>, ProductRepository>();
 builder.Services.AddTransient<IRepository<Order>, OrderRepository>();

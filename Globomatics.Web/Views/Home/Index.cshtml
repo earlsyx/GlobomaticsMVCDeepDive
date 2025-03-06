@@ -1,4 +1,5 @@
-﻿@*the @ symbols indicated that there's c# code to be evaluated during
+﻿@using Globomatics.Infrastructure.Repositories
+@*the @ symbols indicated that there's c# code to be evaluated during
     the rendering of this view.
 
     @model, indicate what's this view is going to work with in terms of
@@ -12,6 +13,7 @@ clean up and remove the depndency for the product
 @using Globomantics.Domain.Models;
 @model IEnumerable<Product> *@
 
+@inject IStateRepository stateRepository;
 
 @{
     ViewData["Title"] = "Home";
@@ -36,7 +38,10 @@ clean up and remove the depndency for the product
     <div class="col-sm-5">
         <div class="card">
             <div class="card-body">
-                TBA: Shopping Cart
+                @await Component.InvokeAsync("ShoppingCart", new {
+                    cartId = stateRepository.GetValue("CartId"),
+                    isCompact = true
+                })
             </div>
         </div>
     </div>
