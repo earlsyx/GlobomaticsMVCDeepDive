@@ -4,37 +4,42 @@ using Globomatics.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Globomatics.Web.Components
+namespace Globomatics.Web.Components;
+
+public class ShoppingCartViewComponent : ViewComponent
 {
-    public class ShoppingCartViewComponent : ViewComponent
+    private readonly GlobomanticsContext context;
+    private readonly IStateRepository stateRepository;
+
+    public ShoppingCartViewComponent(GlobomanticsContext context,
+        IStateRepository stateRepository)
     {
-        private readonly GlobomanticsContext context;
-        private readonly IStateRepository stateRepository;
+        this.context = context;
+        this.stateRepository = stateRepository;
+    }
 
-        public ShoppingCartViewComponent(GlobomanticsContext context, IStateRepository stateRepository)
+    public async Task<IViewComponentResult> InvokeAsync(string cartId,
+        bool isCompact)
+    {
+        if (!Guid.TryParse(cartId, out var id))
         {
-            this.context = context;
-            this.stateRepository = stateRepository;
+            return View(new ShoppingCartModel { IsCompact = isCompact });
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(string cartId, bool isCompact)
+        var cart = await context.Carts
+            .Include(x => x.LineItems)
+            .ThenInclude(x => x.Product)
+            .FirstOrDefaultAsync(x => x.CartId == id);
+
+        if (cart is not null)
         {
-            if (!Guid.TryParse(cartId, out var id))
-            {
-                return View(new ShoppingCartModel { IsCompact = isCompact });
-            }
+            stateRepository.SetValue("NumberOfItems",
+                cart.LineItems.Sum(x => x.Quantity).ToString());
 
-            var cart = await context.Carts.Include(x => x.LineItems).ThenInclude(x => x.Product).FirstOrDefaultAsync(x => x.CartId == id);
-
-            if (cart is not null)
-            {
-                stateRepository.SetValue("NumberOfItems", cart.LineItems.Sum(x => x.Quantity).ToString());
-
-                stateRepository.SetValue("CartId", cart.CartId.ToString());
-            }
-
-            return View(new ShoppingCartModel { Cart = cart, IsCompact = isCompact });
+            stateRepository.SetValue("CartId",
+                cart.CartId.ToString());
         }
-       
+
+        return View(new ShoppingCartModel { Cart = cart, IsCompact = isCompact });
     }
 }
