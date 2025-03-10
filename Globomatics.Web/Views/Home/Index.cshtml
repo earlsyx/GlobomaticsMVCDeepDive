@@ -29,8 +29,9 @@ clean up and remove the depndency for the product
                     this will find the component, create an instance of itand invoked method async,
                     you can also optionally pass data into the view component
                 *@
-
-                @await Component.InvokeAsync("ProductList"); 
+                <cache expires-after="@TimeSpan.FromSeconds(10)">
+                    @await Component.InvokeAsync("ProductList");
+                </cache>
 
             </div>
         </div>

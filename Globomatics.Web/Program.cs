@@ -3,10 +3,19 @@ using Globomantics.Infrastructure.Data;
 using Globomatics.Infrastructure.Repositories;
 using Globomatics.Web.Attributes;
 using Globomatics.Web.Constraints;
+using Globomatics.Web.Filters;
 using Globomatics.Web.Repositories;
 using Globomatics.Web.Transformers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/Login";
+});
 
 builder.Services.AddSession();
 
@@ -16,10 +25,9 @@ builder.Services.AddRouting(options =>
     options.ConstraintMap["slugTransform"] = typeof(SlugParameterTransformer);
 });
 
-
-
 builder.Services.AddControllersWithViews(options =>
 {
+    options.Filters.Add<TimerFilter>(); 
     options.ValueProviderFactories.Add(new SessionValueProviderFactory());
 });
 
@@ -33,6 +41,7 @@ builder.Services.AddTransient<IRepository<Order>, OrderRepository>();
 builder.Services.AddTransient<IRepository<Cart>, CartRepository>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
 
+builder.Services.AddScoped<TimerFilter>();
 
 var app = builder.Build();
 
@@ -40,7 +49,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -59,14 +67,25 @@ app.UseSession();
 //    defaults: new { action = "TicketDetails", controller = "Home" },
 //    pattern: "/details/{productId}/{slug?}");   
 
+
+app.MapControllerRoute(
+    name: "administrationDefault",
+    defaults: new { controller = "Home"},
+    pattern: "{area:exists}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "administration",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+
 using(var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<GlobomanticsContext>();
-
     GlobomanticsContext.CreateInitialDatabase(context);
 }
-app.Run(); 
+app.Run();

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Globomatics.Web.Constraints;
 using System.Text.RegularExpressions;
 using System.ComponentModel.DataAnnotations;
+using Globomatics.Web.Filters;
 namespace Globomatics.Web.Controllers;
 
 public class HomeController : Controller
@@ -19,7 +20,7 @@ public class HomeController : Controller
         this.productRepository = productRepository;
     }
 
-
+    [ServiceFilter(typeof(TimerFilter))]
     public IActionResult Index()
     {
         // since we remove the depndency in the index , then, meaning the index action, we dont needto

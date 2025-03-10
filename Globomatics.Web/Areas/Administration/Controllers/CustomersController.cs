@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Globomantics.Domain.Models;
 using Globomantics.Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Globomatics.Web.Controllers
 {
+    [Area("Administration")]
+    [Authorize]
     public class CustomersController : Controller
     {
         private readonly GlobomanticsContext _context;

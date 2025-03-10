@@ -14,8 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Controllers\CartController.cs" />
+    <Compile Remove="Areas\Administration\Controllers\HomeController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Controllers\HomeController.cs" />
+    <Content Include="Controllers\CartController.cs" />
   </ItemGroup>
 
   <ItemGroup>

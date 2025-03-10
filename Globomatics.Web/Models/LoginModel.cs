@@ -5,7 +5,7 @@ namespace Globomatics.Web.Models;
 
 public class LoginModel
 {
-    [EmailAddress]
+    [EmailAddress]  
     public required string Username { get; set; }
 
     [DataType(DataType.Password)]
